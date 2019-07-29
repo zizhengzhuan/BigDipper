@@ -2,10 +2,6 @@ package com.z3pipe.bigdipper.util;
 
 import android.content.Context;
 
-import androidx.core.content.ContextCompat;
-
-import com.z3pipe.bigdipper.model.User;
-
 public class SettingsManager {
     private static SettingsManager instance;
     private static final String KEY_LAST_USER_NAME = "KEY_LAST_USER_NAME";

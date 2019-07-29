@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.z3pipe.bigdipper.R;
 import com.z3pipe.bigdipper.activity.MainActivity;
+import com.z3pipe.bigdipper.ui.dialog.LoginDialog;
 import com.z3pipe.z3location.broadcast.AutostartReceiver;
 import com.z3pipe.z3location.service.PositionService;
 
@@ -56,6 +57,7 @@ import com.z3pipe.bigdipper.R;
 import com.z3pipe.bigdipper.activity.MainActivity;
 import com.z3pipe.z3location.broadcast.AutostartReceiver;
 import com.z3pipe.z3location.service.PositionService;
+import com.z3pipe.z3location.service.WatchDogService;
 
 /**
  * @link https://www.z3pipe.com
@@ -82,6 +84,8 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
 
     private AlarmManager alarmManager;
     private PendingIntent alarmIntent;
+    private LoginDialog dialog;
+    private long lastTime = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -168,6 +172,29 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
     public void onResume() {
         super.onResume();
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        showLoginDialog();
+    }
+
+    private void showLoginDialog(){
+        if(dialog == null) {
+            dialog = new LoginDialog(getActivity());
+        }
+
+        if(!isNeedShow(lastTime)) {
+            return;
+        }
+
+        lastTime = System.currentTimeMillis();
+        dialog.show();
+    }
+
+    private boolean isNeedShow(long lastTime) {
+        long diff = System.currentTimeMillis() - lastTime;
+        if(diff/1000/60/10 > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -224,6 +251,7 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
         if (permission) {
             setPreferencesEnabled(false);
             ContextCompat.startForegroundService(getActivity(), new Intent(getActivity(), PositionService.class));
+            ContextCompat.startForegroundService(getActivity(), new Intent(getActivity(), WatchDogService.class));
             alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                     ALARM_MANAGER_INTERVAL, ALARM_MANAGER_INTERVAL, alarmIntent);
         } else {
@@ -237,6 +265,8 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
         alarmManager.cancel(alarmIntent);
         PositionService.stopService(getActivity());
         //getActivity().stopService(new Intent(getActivity(), PositionService.class));
+        Intent serviceIntent = new Intent(getActivity(), WatchDogService.class);
+        getActivity().stopService(serviceIntent);
         setPreferencesEnabled(true);
     }
 
