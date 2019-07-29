@@ -49,4 +49,5 @@ GPS定位及人员轨迹问题常见与所有的LBS类业务场景，包括定�
 # 说明
 基于过去几年在各个领域的巡检项目中积累了较多的轨迹数据和生成过程相结合的解决方案，集成各类型GPS定位坐标的获取和上传，进行集中存储、分析和展示，支持NMEA0183数据解析，支持外接蓝牙设备，集成常用互联网LBS定位模块，服务基于SpringBoot 2.x+Netty+RabbitMQ+PostgreSQL，支持Socket和HTTP。
 #### 前端访问地址 http://www.z3pipe.com/dist/ 
-#### 本项目由于某些原因，提供的App源码为DEMO级别，未对代码做任何规范化和优化，如需详细了解，可以关注微信公众号：https://mp.weixin.qq.com/s/YXlUhwDltEL6WR8l0NXL8Q  关注并提问。
+#### 本项目由于某些原因，提供的App源码为DEMO级别，未对代码做任何规范化和优化。
+如需详细了解，可以关注微信公众号：https://mp.weixin.qq.com/s/YXlUhwDltEL6WR8l0NXL8Q  关注并提问。
