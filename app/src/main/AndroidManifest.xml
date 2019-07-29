@@ -24,21 +24,16 @@
         </service>
 
         <activity
-            android:name=".activity.LoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity
             android:name=".activity.MainActivity"
-            android:configChanges="keyboardHidden|orientation"
             android:launchMode="singleTask" />
 
         <activity-alias
             android:name=".Launcher"
             android:targetActivity=".activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity-alias>
 
     </application>

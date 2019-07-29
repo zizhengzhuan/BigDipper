@@ -4,6 +4,7 @@ package com.z3pipe.bigdipper;
 import android.location.Location;
 
 import com.z3pipe.z3location.db.DatabaseHelper;
+import com.z3pipe.z3location.model.Position;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,8 +24,8 @@ public class DatabaseHelperTest {
 
         DatabaseHelper databaseHelper = new DatabaseHelper(RuntimeEnvironment.application);
 
-        Position position = new Position("123456789012345", new Location("gps"), 0);
-        position.setTime(new Date(0));
+        Position position = new Position("","","123456789012345", new Location("gps"), 0);
+        position.setTime(System.currentTimeMillis());
 
         assertNull(databaseHelper.selectPosition());
 

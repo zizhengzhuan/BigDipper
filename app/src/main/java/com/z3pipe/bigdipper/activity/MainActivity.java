@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     @Override
     protected void onStart() {
-        startGuardService();
+        //startGuardService();
         super.onStart();
     }
 
@@ -65,8 +66,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     public void stopGuardService() {
-        Intent serviceIntent = new Intent(getApplicationContext(), WatchDogService.class);
-        getApplicationContext().stopService(serviceIntent);
+//        Intent serviceIntent = new Intent(getApplicationContext(), WatchDogService.class);
+//        getApplicationContext().stopService(serviceIntent);
     }
 
     public void startGuardService() {
@@ -83,12 +84,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         positionCollectionConfig.setPort(2437);
         TrackingConfigController.savePositionCollectionConfig(this, positionCollectionConfig);
 
-        Intent serviceIntent = new Intent(getApplicationContext(), WatchDogService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            getApplicationContext().startForegroundService(serviceIntent);
-        } else {
-            getApplicationContext().startService(serviceIntent);
-        }
+//        Intent serviceIntent = new Intent(getApplicationContext(), WatchDogService.class);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            getApplicationContext().startForegroundService(serviceIntent);
+//        } else {
+//            getApplicationContext().startService(serviceIntent);
+//        }
     }
 
     /**
@@ -158,6 +159,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     public void onBackPressed() {
         super.onBackPressed();
         backToHome();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            backToHome();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     /**
