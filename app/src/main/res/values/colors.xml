@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+
+    <color name="primary">#43A047</color>
+    <color name="primary_dark">#2E7D32</color>
+    <color name="accent">#388E3C</color>
+
+    <color name="black_theme_1">#ff333333</color>
+    <color name="black_theme_2">#4f4f4f</color>
+    <color name="white_theme_1">#ffffffff</color>
+    <color name="white_theme_2">#F7F7F7</color>
+    <color name="blue_theme_1">#5677fc</color>
+    <color name="blue_theme_2">#6C75B7</color>
+    <color name="blue_theme_3">#ff3b96ea</color>
+    <color name="blue_theme_4">#1DB9F2</color>
+    <color name="font_level_1">#000000</color>
+    <color name="font_level_2">#4f4f4f</color>
+    <color name="font_level_3">#5b5b5b</color>
+    <color name="font_level_4">#999999</color>
+
+    <color name="blue_normal">#288ef0</color>
+    <color name="blue_pressed">#0b5dac</color>
+    <color name="txt_hint">#b4b4b4</color>
+    <color name="txt_label">#686868</color>
+    <color name="txt_black_normal">#333333</color>
+    <color name="divider_thick">#e7e7e7</color>
+    <color name="group_bkcolor">#efeff4</color>
+    <color name="transparent">#00ffffff</color>
+    <color name="gainsboro">#dcdcdc</color>
 </resources>

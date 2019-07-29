@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="10dip" >
+
+    <Button
+        android:id="@+id/custom_dialog_cancel"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="20dip"
+        android:layout_marginRight="20dip"
+        android:layout_weight="1"
+        android:background="@drawable/selector_bt_bg"
+        android:clickable="true"
+        android:minWidth="120dp"
+        android:text="取消"
+        android:textColor="@color/white_theme_1"
+        android:textSize="@dimen/title_font_size_3"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/custom_dialog_ok"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_weight="1"
+        android:background="@drawable/selector_bt_bg"
+        android:clickable="true"
+        android:minWidth="120dp"
+        android:text="确定"
+        android:textColor="@color/white_theme_1"
+        android:textSize="@dimen/title_font_size_3"
+        android:textStyle="bold" />
+
+</LinearLayout>

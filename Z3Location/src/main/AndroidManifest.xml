@@ -1,0 +1,90 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.z3pipe.z3location">
+
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+
+    <uses-feature android:name="android.hardware.location.network" />
+    <uses-feature android:name="android.hardware.location.gps" />
+
+    <application android:allowBackup="true">
+        <!--高德地图key-->
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="${GD_KEY}" />
+        <!--高德位置服务-->
+        <service android:name="com.amap.api.location.APSService" />
+        <!--高德位置服务-->
+        <service
+            android:name="com.z3pipe.z3location.service.WatchDogService"
+            android:enabled="true"
+            android:persistent="true" />
+
+        <receiver
+            android:name="com.xdandroid.hellodaemon.WakeUpReceiver"
+            android:process=":watch">
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+                <action android:name="com.xdandroid.hellodaemon.CANCEL_JOB_ALARM_SUB" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="com.xdandroid.hellodaemon.WakeUpReceiver$WakeUpAutoStartReceiver"
+            android:process=":watch">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.z3pipe.z3location.broadcast.AutostartReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.xdandroid.hellodaemon.AbsWorkService$WorkNotificationService" />
+        <service
+            android:name="com.z3pipe.z3location.service.PositionService"
+            android:enabled="true"
+            android:persistent="true" />
+
+        <service
+            android:name="com.xdandroid.hellodaemon.JobSchedulerService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:process=":watch" />
+
+        <service
+            android:name="com.xdandroid.hellodaemon.WatchDogService"
+            android:process=":watch" />
+
+        <service
+            android:name="com.xdandroid.hellodaemon.WatchDogService$WatchDogNotificationService"
+            android:process=":watch" />
+    </application>
+</manifest>

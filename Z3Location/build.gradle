@@ -1,0 +1,33 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation "com.google.android.material:material:$rootProject.ext.androidxMaterialVersion"
+    testImplementation 'junit:junit:4.12'
+    implementation files('libs/AMap_Location_V4.5.1_20190402.jar')
+    api project(':Z3core')
+    implementation files('libs/rxjava-2.2.0.jar')
+    implementation 'com.koushikdutta.async:androidasync:2.+'
+    implementation 'com.alibaba:fastjson:1.1.71.android'
+}

@@ -1,28 +1,79 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
     defaultConfig {
         applicationId "com.z3pipe.bigdipper"
-        minSdkVersion 14
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 3
+        versionName '0.1.4'
+        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [moduleName: project.getName()]
+            }
+        }
     }
+
+    signingConfigs {
+        release {
+            storeFile file('keystore.jks')
+            storePassword '123456'
+            keyAlias 'big'
+            keyPassword '123456'
+        }
+    }
+
     buildTypes {
+        debug {
+            minifyEnabled false
+            zipAlignEnabled true
+            shrinkResources false
+            manifestPlaceholders = ["GD_KEY": "014443d55b211b3a1f611f743229c2e4"]
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            zipAlignEnabled true
+            shrinkResources false
+            manifestPlaceholders = ["GD_KEY": "014443d55b211b3a1f611f743229c2e4"]
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+    }
+
+    flavorDimensions "default"
+    productFlavors {
+        dev {}
+        pre {}
+        prod {}
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "BD-${variant.name}-c${variant.versionCode}-v${variant.versionName}.apk"
+        }
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
         }
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation "com.google.android.material:material:$rootProject.ext.androidxMaterialVersion"
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    testImplementation 'org.robolectric:robolectric:4.1'
+    implementation 'pub.devrel:easypermissions:1.0.1'
+    implementation project(path: ':Z3Location')
 }

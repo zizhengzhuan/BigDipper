@@ -1,1 +1,1 @@
-include ':app'
+include ':app', ':Z3Location', ':Z3core'

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="drawable" name="trans">#00000000</item>
+    <item type="drawable" name="lbs_grid_item_selected">#80666666</item>
+    <item type="drawable" name="gray">#7fcccccc</item>
+    <item type="drawable" name="gray_fornight">#7f7f7f7f</item>
+    <item type="drawable" name="gif_bkcolor">#ff2f2f2f</item>
+    <item type="drawable" name="transparent_2">#00000000</item>
+    <item type="drawable" name="guide_background">#ff262626</item>
+    <item type="drawable" name="beginner_background">#ffeeefe9</item>
+    <item type="drawable" name="background_list_item_normal_f8f8f8">#fff8f8f8</item>
+    <item type="drawable" name="background_list_item_normal">#ffffffff</item>
+    <item type="drawable" name="background_list_item_press">#ff058bf4</item>
+    <item type="drawable" name="background_list_item_select">#fffffee7</item>
+    <item type="drawable" name="background_list_divider_normal">#ffdddddd</item>
+    <item type="drawable" name="background_list_divider_press">#00000000</item>
+    <item type="drawable" name="feed_detail_default_img_bg">#fff2f2f2</item>
+    <item type="drawable" name="background_news_normal">#fff8f8f8</item>
+    <item type="drawable" name="background_news_high">#fffffee7</item>
+    <item type="drawable" name="background_news_press">#ff59b2e3</item>
+</resources>

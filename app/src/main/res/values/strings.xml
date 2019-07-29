@@ -1,3 +1,67 @@
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
-    <string name="app_name">BigDipper</string>
+  <string name="app_name">BigDipper</string>
+  <string name="app_logo">BigDipper</string>
+  <string name="shortcut_start">Start service</string>
+  <string name="shortcut_stop">Stop service</string>
+  <string name="shortcut_sos">Send SOS</string>
+  <string name="channel_default">Primary Channel</string>
+  <string name="settings_id_title">Device identifier</string>
+  <string name="settings_url_title">Server URL</string>
+  <string name="settings_url_summary">Tracking server URL</string>
+  <string name="settings_interval_title">Frequency</string>
+  <string name="settings_interval_summary">Reporting interval in seconds</string>
+  <string name="settings_distance_title">Distance</string>
+  <string name="settings_distance_summary">Reporting distance in meters</string>
+  <string name="settings_angle_title">Angle</string>
+  <string name="settings_angle_summary">Reporting angle in degrees</string>
+  <string name="settings_status_title">Service status</string>
+  <string name="settings_status_off">Start</string>
+  <string name="settings_status_on">Stop</string>
+  <string name="settings_status_off_summary">Service stopped</string>
+  <string name="settings_status_on_summary">Service running</string>
+  <string name="settings_accuracy_title">Location accuracy</string>
+  <string name="settings_accuracy_summary">Desired location accuracy</string>
+  <string name="settings_accuracy_high">High</string>
+  <string name="settings_accuracy_medium">Medium</string>
+  <string name="settings_accuracy_low">Low</string>
+  <string name="settings_foreground_title">Foreground service</string>
+  <string name="settings_foreground_summary">Increase service priority</string>
+  <string name="menu_status">Status</string>
+  <string name="menu_about">About</string>
+  <string name="menu_shortcuts">Add shortcuts</string>
+  <string name="menu_clear">Clear</string>
+  <string name="about_description">Real time GPS tracker for Android devices. Compatible with BigDipper Server and other tracking systems.</string>
+  <string name="about_license">This application is free and open source, source code is licensed under Apache License Version 2.0 and available on GitHub.</string>
+  <string name="about_web">For more information visit\nwww.z3pipe.com/bd</string>
+  <string name="status_service_create">Service started</string>
+  <string name="status_service_destroy">Service stopped</string>
+  <string name="status_send_success">Send successfully</string>
+  <string name="status_send_fail">Send failed</string>
+  <string name="status_location_update">Location update</string>
+  <string name="status_network_online">Network online</string>
+  <string name="status_network_offline">Network offline</string>
+  <string name="hidden_app_name">Device Settings</string>
+  <string name="hidden_alert">The app has been hidden. To open it again please dial 8722227 (TRACCAR).</string>
+  <string name="error_msg_invalid_url">Please enter a valid http:// or https:// URL</string>
+
+  <!-- LogIn Activity begin -->
+  <string name="str_username">username</string>
+  <string name="str_password">password</string>
+  <string name="login_user_name_input">please input your username</string>
+  <string name="login_pwd_input">please input your password</string>
+  <string name="str_remember_password">remember password</string>
+  <string name="str_auto_login">auto login</string>
+  <string name="str_forgetpassword">find password</string>
+  <string name="str_clickinput">click and input</string>
+  <string name="str_setting">setting</string>
+  <string name="str_signin">login</string>
+  <string name="str_logining">logging</string>
+  <string name="login_username_empty">username is not allow empty</string>
+  <string name="login_password_empty">password is not allow empty</string>
+  <string name="login_logging_in">logging</string>
+  <string name="login_success">login success</string>
+  <string name="login_fail_try_later">login fail, try again</string>
+  <string name="setting_login_setting">login setting</string>
+  <!-- LogIn Activity end -->
 </resources>

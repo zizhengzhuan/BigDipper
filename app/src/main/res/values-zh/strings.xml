@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <string name="app_name">位置服务</string>
+  <string name="app_logo">位置服务</string>
+  <string name="shortcut_start">开始服务</string>
+  <string name="shortcut_stop">停止服务</string>
+  <string name="shortcut_sos">发送SOS</string>
+  <string name="channel_default">主通道</string>
+  <string name="settings_id_title">设备编码</string>
+  <string name="settings_url_title">服务器地址</string>
+  <string name="settings_url_summary">服务地址</string>
+  <string name="settings_interval_title">定位频率（秒）</string>
+  <string name="settings_interval_summary">报告间隔（秒）</string>
+  <string name="settings_distance_title">距离</string>
+  <string name="settings_distance_summary">报告距离（米）</string>
+  <string name="settings_angle_title">角度</string>
+  <string name="settings_angle_summary">报告角度（度）</string>
+  <string name="settings_status_title">定位</string>
+  <string name="settings_status_off">开始</string>
+  <string name="settings_status_on">停止</string>
+  <string name="settings_status_off_summary">服务已停止</string>
+  <string name="settings_status_on_summary">服务运行中</string>
+  <string name="settings_accuracy_title">位置精度</string>
+  <string name="settings_accuracy_summary">期望位置精度</string>
+  <string name="settings_accuracy_high">高</string>
+  <string name="settings_accuracy_medium">中</string>
+  <string name="settings_accuracy_low">低</string>
+  <string name="settings_foreground_title">前台服务</string>
+  <string name="settings_foreground_summary">提高服务优先级</string>
+  <string name="menu_status">定位状态</string>
+  <string name="menu_about">关于</string>
+  <string name="menu_shortcuts">添加图标</string>
+  <string name="menu_clear">清除</string>
+  <string name="about_description">Android设备的实时GPS跟踪器。兼容北斗七星服务器和其他跟踪系统。</string>
+  <string name="about_license">此应用免费且开源。源码许可为Apache V2.0，在GitHub上发布。</string>
+  <string name="about_web">更多信息请访问www.z3pipe.com</string>
+  <string name="status_service_create">服务已开始</string>
+  <string name="status_service_destroy">服务已停止</string>
+  <string name="status_send_success">发送成功</string>
+  <string name="status_send_fail">发送失败</string>
+  <string name="status_location_update">位置更新</string>
+  <string name="status_network_online">网络在线</string>
+  <string name="status_network_offline">网络离线</string>
+  <string name="hidden_app_name">设备设置</string>
+  <string name="hidden_alert">APP已隐藏，请拨号8722227重新打开</string>
+  <string name="error_msg_invalid_url">请输入有效的地址，如http://或https://</string>
+
+  <!-- LogIn Activity begin -->
+  <string name="str_username">帐号</string>
+  <string name="str_password">密码</string>
+  <string name="login_user_name_input">请输入您的用户名</string>
+  <string name="login_pwd_input">请输入您的密码</string>
+  <string name="str_remember_password">记住密码</string>
+  <string name="str_auto_login">自动登录</string>
+  <string name="str_forgetpassword">找回密码</string>
+  <string name="str_clickinput">点击输入</string>
+  <string name="str_setting">设置</string>
+  <string name="str_signin">登    录</string>
+  <string name="str_logining">正在登录</string>
+  <string name="login_username_empty">用户名不能为空</string>
+  <string name="login_password_empty">密码不能为空</string>
+  <string name="login_logging_in">正在登录</string>
+  <string name="login_success">登录成功</string>
+  <string name="login_fail_try_later">登录失败，请稍候重试</string>
+  <string name="setting_login_setting">登录设置</string>
+
+  <!-- LogIn Activity end -->
+</resources>
