@@ -129,7 +129,7 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
                 //List<Position> positions = new ArrayList<>();
                 //positions.add(position);
                 //PositionDataSendTask.getInstance(positionCollectionConfig).sendOrder(JSONArray.toJSONString(positions));
-                PositionDataSendTask.getInstance(positionCollectionConfig).sendOrder(position,databaseHelper);
+                PositionDataSendTask.getInstance(positionCollectionConfig).sendOrder(position, databaseHelper);
                 Log.d(TAG, "实时上报" + position.getLon());
             } else {
                 // 没有网络时，存储到db

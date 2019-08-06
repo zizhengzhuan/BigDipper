@@ -10,4 +10,17 @@
         android:switchTextOn="@string/settings_status_on"
         android:title="@string/settings_status_title" />
 
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="report"
+        android:summaryOff="@string/settings_report_off_summary"
+        android:summaryOn="@string/settings_report_on_summary"
+        android:switchTextOff="@string/settings_status_off"
+        android:switchTextOn="@string/settings_status_on"
+        android:title="@string/settings_report_title" />
+
+    <Preference android:title="查看坐标文件" >
+        <intent android:action="com.z3pipe.bigdipper.activity.ENTER" />
+    </Preference>
+
 </PreferenceScreen>

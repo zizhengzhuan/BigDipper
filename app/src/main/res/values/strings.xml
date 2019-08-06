@@ -16,6 +16,7 @@
   <string name="settings_angle_title">Angle</string>
   <string name="settings_angle_summary">Reporting angle in degrees</string>
   <string name="settings_status_title">Service status</string>
+  <string name="settings_report_title">position report</string>
   <string name="settings_status_off">Start</string>
   <string name="settings_status_on">Stop</string>
   <string name="settings_status_off_summary">Service stopped</string>
@@ -27,6 +28,8 @@
   <string name="settings_accuracy_low">Low</string>
   <string name="settings_foreground_title">Foreground service</string>
   <string name="settings_foreground_summary">Increase service priority</string>
+  <string name="settings_report_off_summary">position report stop</string>
+  <string name="settings_report_on_summary">position report start</string>
   <string name="menu_status">Status</string>
   <string name="menu_about">About</string>
   <string name="menu_shortcuts">Add shortcuts</string>

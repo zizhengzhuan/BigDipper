@@ -36,6 +36,13 @@
             </intent-filter>
         </activity-alias>
 
+        <activity android:name=".activity.TxtActivity">
+            <intent-filter>
+                <action android:name="com.z3pipe.bigdipper.activity.ENTER"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
