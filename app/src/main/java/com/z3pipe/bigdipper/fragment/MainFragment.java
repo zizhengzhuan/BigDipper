@@ -5,29 +5,55 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.TwoStatePreference;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.webkit.URLUtil;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.z3pipe.bigdipper.R;
 import com.z3pipe.bigdipper.activity.MainActivity;
+import com.z3pipe.bigdipper.activity.TxtActivity;
 import com.z3pipe.bigdipper.ui.dialog.LoginDialog;
+import com.z3pipe.bigdipper.util.StringUtil;
+import com.z3pipe.z3core.util.DateUtil;
 import com.z3pipe.z3location.broadcast.AutostartReceiver;
+import com.z3pipe.z3location.model.Position;
 import com.z3pipe.z3location.service.PositionService;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.Date;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -58,6 +84,19 @@ import com.z3pipe.bigdipper.activity.MainActivity;
 import com.z3pipe.z3location.broadcast.AutostartReceiver;
 import com.z3pipe.z3location.service.PositionService;
 import com.z3pipe.z3location.service.WatchDogService;
+import com.z3pipe.z3location.util.Constants;
+import com.z3pipe.z3location.util.FileUtil;
+import com.z3pipe.z3location.util.Textwriter;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import static java.net.Proxy.Type.HTTP;
 
 /**
  * @link https://www.z3pipe.com
@@ -69,6 +108,9 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
     private static final String TAG = MainFragment.class.getSimpleName();
 
     private static final int ALARM_MANAGER_INTERVAL = 15000;
+    private static final int REPORT_SUCCESS = 1;
+    private static final int REPORT_FAIL = 2;
+    private static final int SHOW_LOGIN_DIALOG = 3;
 
     public static final String KEY_DEVICE = "id";
     public static final String KEY_URL = "url";
@@ -77,6 +119,7 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
     public static final String KEY_ANGLE = "angle";
     public static final String KEY_ACCURACY = "accuracy";
     public static final String KEY_STATUS = "status";
+    public static final String KEY_REPORT = "report";
 
     private static final int PERMISSIONS_REQUEST_LOCATION = 2;
 
@@ -85,7 +128,9 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
     private AlarmManager alarmManager;
     private PendingIntent alarmIntent;
     private LoginDialog dialog;
-    private long lastTime = 0;
+    private PositionHandler handler;
+    private ScheduledExecutorService scheduledExecutorService;
+    private boolean isTimetaskStop;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,6 +143,7 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         addPreferencesFromResource(R.xml.preferences);
         initPreferences();
+        handler = new PositionHandler();
 
 //        findPreference(KEY_DEVICE).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 //            @Override
@@ -150,6 +196,8 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
         if (sharedPreferences.getBoolean(KEY_STATUS, false)) {
             startTrackingService(true, false);
         }
+        showLoginDialog();
+        startTimerTask();
     }
 
     private void removeLauncherIcon() {
@@ -172,29 +220,39 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
     public void onResume() {
         super.onResume();
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-        showLoginDialog();
     }
 
     private void showLoginDialog(){
-        if(dialog == null) {
+        if(null == dialog) {
             dialog = new LoginDialog(getActivity());
         }
 
-        if(!isNeedShow(lastTime)) {
-            return;
-        }
-
-        lastTime = System.currentTimeMillis();
+        dialog.getWindow().setFlags(0x80000000,0x80000000);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_HOME:
+                        if(!isLogin()) {
+                            return true;
+                        }
+                    case KeyEvent.KEYCODE_BACK:
+                        if(!isLogin()) {
+                            return true;
+                        }
+                }
+                return false;
+        }});
         dialog.show();
     }
 
-    private boolean isNeedShow(long lastTime) {
-        long diff = System.currentTimeMillis() - lastTime;
-        if(diff/1000/60/10 > 0) {
-            return true;
+    private boolean isLogin() {
+        if(StringUtil.isBlank(Constants.USERID) || "0".equals(Constants.USERID)) {
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     @Override
@@ -209,7 +267,6 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
 //        findPreference(KEY_INTERVAL).setEnabled(enabled);
 //        findPreference(KEY_DISTANCE).setEnabled(enabled);
 //        findPreference(KEY_ANGLE).setEnabled(enabled);
-//        findPreference(KEY_ACCURACY).setEnabled(enabled);
     }
 
     @Override
@@ -222,12 +279,15 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
             }
         } else if (key.equals(KEY_DEVICE)) {
             findPreference(KEY_DEVICE).setSummary(sharedPreferences.getString(KEY_DEVICE, null));
+        } else if(key.equals(KEY_REPORT)) {
+            if (sharedPreferences.getBoolean(KEY_REPORT, false)) {
+                reportPosition();
+            }
         }
     }
 
     private void initPreferences() {
         PreferenceManager.setDefaultValues(getActivity(), R.xml.preferences, false);
-
 //        if (!sharedPreferences.contains(KEY_DEVICE)) {
 //            String id = String.valueOf(new Random().nextInt(900000) + 100000);
 //            sharedPreferences.edit().putString(KEY_DEVICE, id).apply();
@@ -292,6 +352,128 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
         }
         Toast.makeText(getActivity(), R.string.error_msg_invalid_url, Toast.LENGTH_LONG).show();
         return false;
+    }
+
+    private void startTimerTask() {
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        scheduledExecutorService.scheduleAtFixedRate(new TimerIncreasedRunnable(), 0, 15, TimeUnit.MINUTES);
+        isTimetaskStop = false;
+    }
+
+    private void stopTimerTask() {
+        isTimetaskStop = true;
+        if (null != scheduledExecutorService) {
+            scheduledExecutorService.shutdownNow();
+        }
+    }
+
+    public class TimerIncreasedRunnable implements Runnable {
+        @Override
+        public void run() {
+            try {
+                if (isTimetaskStop) {
+                    return;
+                }
+                if(!StringUtil.isBlank(Constants.USERID)) {
+                    return;
+                }
+                Message msg = Message.obtain();
+                msg.obj = SHOW_LOGIN_DIALOG;
+                handler.sendMessage(msg);
+            } catch (Throwable t) {
+                Log.e("LocationService", t.getMessage());
+            }
+        }
+    }
+
+    private void reportPosition(){
+//        new Thread(new PostRunnable()).start();
+        String requestUrl = "http://www.z3pipe.com:2436/api/v1/z3iot/position/reportTrace";
+       // String requestUrl = "http://192.168.60.199:2436/api/v1/z3iot/position/reportTrace";
+        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+        final String requestBody = getPositionArr();
+        Request request = new Request.Builder()
+                .url(requestUrl)
+                .post(RequestBody.create(mediaType, requestBody))
+                .build();
+
+        OkHttpClient okHttpClient = new OkHttpClient();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String string = response.body().string();
+                boolean success = string.contains("SUCCESS");
+                Message message = Message.obtain();
+                if(success) {
+                    message.what = REPORT_SUCCESS;
+                } else {
+                    message.what = REPORT_FAIL;
+                }
+                handler.sendMessage(message);
+            }
+        });
+    }
+
+    private class PositionHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case REPORT_SUCCESS:
+                    showNotice(true);
+                    sharedPreferences.edit().putBoolean(KEY_REPORT, false).apply();
+                    TwoStatePreference preference = (TwoStatePreference) findPreference(KEY_REPORT);
+                    preference.setChecked(false);
+                    break;
+                case REPORT_FAIL:
+                    showNotice(false);
+                    break;
+                case SHOW_LOGIN_DIALOG:
+                    showLoginDialog();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void showNotice(boolean success) {
+        String notice = "";
+        if(success) {
+            notice = getResources().getString(R.string.status_send_success);
+        } else {
+            notice = getResources().getString(R.string.status_send_fail);
+        }
+        Toast.makeText(getActivity(), notice, Toast.LENGTH_SHORT).show();
+    }
+
+    private String getPositionArr() {
+        String path = FileUtil.getInstance(null).getConfPath() + DateUtil.getDate(new Date()) + ".txt";
+        String positions = Textwriter.readString(path).replace("\n", "");
+        if(StringUtil.isBlank(positions)) {
+            return null;
+        }
+
+        String[] array = positions.split("1#");
+        if(null == array || array.length == 0) {
+            return null;
+        }
+        JSONArray jsonArray = new JSONArray();
+        for(int i=0; i< array.length; i++) {
+            String json = array[i];
+            if(StringUtil.isBlank(json)) {
+                continue;
+            }
+            JSONObject object = JSON.parseObject(json);
+            jsonArray.add(object);
+        }
+
+        return jsonArray.toString();
     }
 
 }

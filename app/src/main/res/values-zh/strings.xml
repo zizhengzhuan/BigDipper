@@ -16,6 +16,7 @@
   <string name="settings_angle_title">角度</string>
   <string name="settings_angle_summary">报告角度（度）</string>
   <string name="settings_status_title">定位</string>
+  <string name="settings_report_title">坐标补报</string>
   <string name="settings_status_off">开始</string>
   <string name="settings_status_on">停止</string>
   <string name="settings_status_off_summary">服务已停止</string>
@@ -27,6 +28,8 @@
   <string name="settings_accuracy_low">低</string>
   <string name="settings_foreground_title">前台服务</string>
   <string name="settings_foreground_summary">提高服务优先级</string>
+  <string name="settings_report_off_summary">坐标上报已停止</string>
+  <string name="settings_report_on_summary">坐标上报进行中</string>
   <string name="menu_status">定位状态</string>
   <string name="menu_about">关于</string>
   <string name="menu_shortcuts">添加图标</string>

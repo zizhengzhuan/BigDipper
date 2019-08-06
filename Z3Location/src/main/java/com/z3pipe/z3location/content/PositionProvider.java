@@ -6,9 +6,13 @@ import android.content.IntentFilter;
 import android.location.Location;
 import android.os.BatteryManager;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.z3pipe.z3core.config.DateStyle;
+import com.z3pipe.z3core.util.DateUtil;
 import com.z3pipe.z3core.util.GeomMathUtil;
 import com.z3pipe.z3location.config.PositionCollectionConfig;
 import com.z3pipe.z3location.model.ELocationQuality;
@@ -16,8 +20,10 @@ import com.z3pipe.z3location.model.Position;
 import com.z3pipe.z3location.util.Constants;
 import com.z3pipe.z3location.util.FileUtil;
 import com.z3pipe.z3location.util.GpsFileUtil;
+import com.z3pipe.z3location.util.Textwriter;
 
 import java.io.File;
+import java.util.Date;
 
 /**
  * @author zhengzhuanzi
@@ -103,7 +109,7 @@ public abstract class PositionProvider {
             } else {
                 Log.d("PositionProvider","用户id无效");
                 if (context != null){
-                    Toast.makeText(context,"用户id无效，请在智慧运营重新启动位置服务",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,"用户id无效，请登录位置服务",Toast.LENGTH_SHORT).show();
                 }
             }
             return;
@@ -121,28 +127,32 @@ public abstract class PositionProvider {
             } else {
                 Log.d("PositionProvider","用户id无效");
                 if (context != null){
-                    Toast.makeText(context,"用户id无效，请在智慧运营重新启动位置服务",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,"用户id无效，请登录位置服务",Toast.LENGTH_SHORT).show();
                 }
             }
         }
     }
 
-    private void writeToFile(Position position){
+    private void writeToFile(Position position) {
         // 将轨迹点写入文件
         String result = buildPositionString(position);
         if (!TextUtils.isEmpty(result)){
             String filePath = getFilePath(position.getUserId());
             try {
-                File file = new File(filePath);
-                if (file.exists()) {
-                    //file.createNewFile();
-                    GpsFileUtil.writeBinaryStream(getFilePath(position.getUserId()),result,true);
-                }
+//                File file = new File(filePath);
+//                if (file.exists()) {
+//                    //file.createNewFile();
+//                    GpsFileUtil.writeBinaryStream(getFilePath(position.getUserId()),result,true);
+//                    Textwriter.write(getFilePath(position.getUserId()), result);
+//                }
+
+                Textwriter.write(filePath, result);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
     /**
      * 定位出现错误
      *
@@ -185,7 +195,8 @@ public abstract class PositionProvider {
      * @return
      */
     private String getFilePath(String userID) {
-        return FileUtil.getInstance(context).getConfPath() + userID + ".t3.bin";
+//        return FileUtil.getInstance(context).getConfPath() + userID + ".t3.bin";
+        return FileUtil.getInstance(context).getConfPath() + DateUtil.getDate(new Date()) + ".txt";
     }
 
     /**
@@ -199,17 +210,40 @@ public abstract class PositionProvider {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append(location.getLon());
-        sb.append(SPLITTERPOSLONLAT);
-        sb.append(location.getLat());
-        sb.append(SPLITTERPOSLONLAT);
-        sb.append(location.getTime());
-        sb.append(SPLITTERPOSLONLAT);
-        sb.append(location.getAccuracy());
-        sb.append(SPLITTERPOSLONLAT);
-        sb.append(location.getSpeed());
-        sb.append(SPLITTERPOS);
-        return sb.toString();
+//        location.setUserId("555");
+//        location.setTrueName("test");
+//        location.setUserName("test");
+        String str = "1#" + JSON.toJSONString(location);
+//        sb.append("1#");
+//        sb.append(JSON.toJSONString(location));
+//        sb.append("userId:" + Constants.USERID);
+//        sb.append(SPLITTERPOSLONLAT);
+//        sb.append("trueName:" + Constants.TRUE_NAME);
+//        sb.append(SPLITTERPOSLONLAT);
+//        sb.append("userName:" + Constants.USER_NAME);
+//        sb.append(SPLITTERPOSLONLAT);
+//        sb.append("id:" + location.getId());
+//        sb.append(SPLITTERPOSLONLAT);
+//        sb.append("course:" + location.getCourse());
+//        sb.append(SPLITTERPOSLONLAT);
+//        sb.append("state:" + location.getState());
+//        sb.append(SPLITTERPOSLONLAT);
+//        sb.append("lon:" + location.getLon());
+//        sb.append(SPLITTERPOSLONLAT);
+//        sb.append("lat:" + location.getLat());
+//        sb.append(SPLITTERPOSLONLAT);
+//        sb.append("time:" + location.getTime());
+//        sb.append(SPLITTERPOSLONLAT);
+//        sb.append("gpsTime:" + DateUtil.dateToString(new Date(location.getTime()), DateStyle.YYYY_MM_DD_HH_MM_SS));
+//        sb.append(SPLITTERPOSLONLAT);
+//        sb.append("accuracy:" + location.getAccuracy());
+//        sb.append(SPLITTERPOSLONLAT);
+//        sb.append("speed:" + location.getSpeed());
+//        sb.append(SPLITTERPOSLONLAT);
+//        sb.append("battery:" + location.getBattery());
+//        sb.append(SPLITTERPOS + "}");
+//        sb.append("\r\n");
+        return str;
     }
 
 }

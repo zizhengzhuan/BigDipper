@@ -70,11 +70,11 @@ public class GaoDePositionProvider extends PositionProvider implements AMapLocat
         Location gpsLocation = new Location("");
         gpsLocation.setTime(aMapLocation.getTime());
         gpsLocation.setProvider(aMapLocation.getLocationType() == AMapLocation.LOCATION_TYPE_GPS ? "GD-GPS" : "GD-NET");
-        //double[] point = WebCoordinateConverter.google2WGS(aMapLocation.getLongitude(), aMapLocation.getLatitude());
+        double[] point = WebCoordinateConverter.google2WGS(aMapLocation.getLongitude(), aMapLocation.getLatitude());
         gpsLocation.setAccuracy(aMapLocation.getAccuracy());
         gpsLocation.setAltitude(aMapLocation.getAltitude());
-        gpsLocation.setLatitude(aMapLocation.getLatitude());
-        gpsLocation.setLongitude(aMapLocation.getLongitude());
+        gpsLocation.setLatitude(point[1]);
+        gpsLocation.setLongitude(point[0]);
         //获取当前速度 单位：米/秒 仅在AMapLocation.getProvider()是gps时有效
         gpsLocation.setSpeed(aMapLocation.getSpeed());
         processLocation(gpsLocation);

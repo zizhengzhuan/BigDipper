@@ -7,8 +7,8 @@ android {
         applicationId "com.z3pipe.bigdipper"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName '0.1.4'
+        versionCode 6
+        versionName '0.1.7'
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
@@ -75,5 +75,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.robolectric:robolectric:4.1'
     implementation 'pub.devrel:easypermissions:1.0.1'
+    implementation 'com.alibaba:fastjson:1.2.58'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+
     implementation project(path: ':Z3Location')
 }
