@@ -7,8 +7,8 @@ android {
         applicationId "com.z3pipe.bigdipper"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6
-        versionName '0.1.7'
+        versionCode 11
+        versionName '0.1.12'
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         javaCompileOptions {
@@ -18,30 +18,30 @@ android {
         }
     }
 
-    signingConfigs {
-        release {
-            storeFile file('keystore.jks')
-            storePassword '123456'
-            keyAlias 'big'
-            keyPassword '123456'
-        }
-    }
+//    signingConfigs {
+//        release {
+//            storeFile file('keystore.jks')
+//            storePassword '123456'
+//            keyAlias 'big'
+//            keyPassword '123456'
+//        }
+//    }
 
     buildTypes {
         debug {
             minifyEnabled false
             zipAlignEnabled true
             shrinkResources false
-            manifestPlaceholders = ["GD_KEY": "014443d55b211b3a1f611f743229c2e4"]
+            manifestPlaceholders = ["GD_KEY": "2ea1cd00947143aaf92887a87768350e"]
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+//            signingConfig signingConfigs.release
         }
 
         release {
             minifyEnabled false
             zipAlignEnabled true
             shrinkResources false
-            manifestPlaceholders = ["GD_KEY": "014443d55b211b3a1f611f743229c2e4"]
+            manifestPlaceholders = ["GD_KEY": "2ea1cd00947143aaf92887a87768350e"]
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

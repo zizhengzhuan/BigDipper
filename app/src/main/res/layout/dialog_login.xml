@@ -166,15 +166,15 @@
                 android:textColor="@color/txt_label"
                 android:textSize="@dimen/font_size_level_2" />
 
-            <CheckBox
-                android:id="@+id/cb_auto_login"
+            <TextView
+                android:id="@+id/tv_setting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="5dp"
-                android:text="@string/str_auto_login"
-                android:textColor="@color/txt_label"
+                android:text="@string/str_setting_ip"
+                android:textColor="@color/blue_theme_3"
                 android:textSize="@dimen/font_size_level_2" />
         </RelativeLayout>
     </LinearLayout>

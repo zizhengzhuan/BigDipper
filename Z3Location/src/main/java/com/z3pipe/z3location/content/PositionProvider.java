@@ -11,15 +11,19 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.ecity.android.log.LogUtil;
 import com.z3pipe.z3core.config.DateStyle;
 import com.z3pipe.z3core.util.DateUtil;
 import com.z3pipe.z3core.util.GeomMathUtil;
+import com.z3pipe.z3location.R;
 import com.z3pipe.z3location.config.PositionCollectionConfig;
 import com.z3pipe.z3location.model.ELocationQuality;
 import com.z3pipe.z3location.model.Position;
 import com.z3pipe.z3location.util.Constants;
 import com.z3pipe.z3location.util.FileUtil;
 import com.z3pipe.z3location.util.GpsFileUtil;
+import com.z3pipe.z3location.util.SettingsManager;
+import com.z3pipe.z3location.util.StringUtil;
 import com.z3pipe.z3location.util.Textwriter;
 
 import java.io.File;
@@ -99,17 +103,33 @@ public abstract class PositionProvider {
         if (null == location||location.getAccuracy()>200) {
             return;
         }
+        if(Constants.lastPositions.size() < 3) {
+            Constants.lastPositions.offer(location.getLatitude() + ","+ location.getLongitude());
+        } else {
+            Constants.lastPositions.poll();
+            Constants.lastPositions.offer(location.getLatitude() + ","+ location.getLongitude());
+        }
 
+        if(judgeSamePositions()) {
+            startUpdates();
+        }
+        setUserId();
         if (null == lastLocation) {
             lastLocation = location;
             if (!"0".equals(Constants.USERID)){
                 Position position = new Position(Constants.USER_NAME,Constants.TRUE_NAME, Constants.USERID, location, getBatteryLevel(context));
+//                String className = getClass().getName();
+//                if("com.z3pipe.z3location.content.GpsPositionProvider".equals(className)) {
+//                    position.setUserId(Constants.USERID + "1000");
+//                }
+
                 listener.onPositionUpdate(position);
+                LogUtil.d("PositionProvider", context.getResources().getString(R.string.str_position_from) + location.getProvider() + position.toString());
                 writeToFile(position);
             } else {
-                Log.d("PositionProvider","用户id无效");
+                LogUtil.d("PositionProvider",context.getResources().getString(R.string.str_invalid_user_id));
                 if (context != null){
-                    Toast.makeText(context,"用户id无效，请登录位置服务",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,R.string.str_invalid_user_id,Toast.LENGTH_SHORT).show();
                 }
             }
             return;
@@ -122,14 +142,50 @@ public abstract class PositionProvider {
             lastLocation = location;
             if (!"0".equals(Constants.USERID)){
                 Position position = new Position(Constants.USER_NAME,Constants.TRUE_NAME, Constants.USERID, location, getBatteryLevel(context));
+//                String className = getClass().getName();
+//                if("com.z3pipe.z3location.content.GpsPositionProvider".equals(className)) {
+//                    position.setUserId(Constants.USERID + "1000");
+//                }
+
                 listener.onPositionUpdate(position);
                 writeToFile(position);
+                LogUtil.d("PositionProvider", context.getResources().getString(R.string.str_position_from) + location.getProvider() + position.toString());
             } else {
-                Log.d("PositionProvider","用户id无效");
+                LogUtil.d("PositionProvider",context.getResources().getString(R.string.str_invalid_user_id));
                 if (context != null){
-                    Toast.makeText(context,"用户id无效，请登录位置服务",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,R.string.str_invalid_user_id,Toast.LENGTH_SHORT).show();
                 }
             }
+        } else {
+            LogUtil.d("PositionProvider", context.getResources().getString(R.string.str_same_time_positions));
+        }
+    }
+
+    private boolean judgeSamePositions() {
+        String str = Constants.lastPositions.element();
+        for(String s : Constants.lastPositions) {
+            if(!str.equals(s)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void setUserId() {
+        if(!validUserId(Constants.USERID)) {
+            String userId = SettingsManager.getInstance().getUserId(context);
+            if(validUserId(userId)) {
+                Constants.USERID = userId;
+            }
+        }
+    }
+
+    private boolean validUserId(String userId) {
+        if(StringUtil.isEmpty(userId) || "0".equals(userId)) {
+            return false;
+        } else{
+            return true;
         }
     }
 
@@ -209,41 +265,7 @@ public abstract class PositionProvider {
             return NULLSTRING;
         }
 
-        StringBuilder sb = new StringBuilder();
-//        location.setUserId("555");
-//        location.setTrueName("test");
-//        location.setUserName("test");
-        String str = "1#" + JSON.toJSONString(location);
-//        sb.append("1#");
-//        sb.append(JSON.toJSONString(location));
-//        sb.append("userId:" + Constants.USERID);
-//        sb.append(SPLITTERPOSLONLAT);
-//        sb.append("trueName:" + Constants.TRUE_NAME);
-//        sb.append(SPLITTERPOSLONLAT);
-//        sb.append("userName:" + Constants.USER_NAME);
-//        sb.append(SPLITTERPOSLONLAT);
-//        sb.append("id:" + location.getId());
-//        sb.append(SPLITTERPOSLONLAT);
-//        sb.append("course:" + location.getCourse());
-//        sb.append(SPLITTERPOSLONLAT);
-//        sb.append("state:" + location.getState());
-//        sb.append(SPLITTERPOSLONLAT);
-//        sb.append("lon:" + location.getLon());
-//        sb.append(SPLITTERPOSLONLAT);
-//        sb.append("lat:" + location.getLat());
-//        sb.append(SPLITTERPOSLONLAT);
-//        sb.append("time:" + location.getTime());
-//        sb.append(SPLITTERPOSLONLAT);
-//        sb.append("gpsTime:" + DateUtil.dateToString(new Date(location.getTime()), DateStyle.YYYY_MM_DD_HH_MM_SS));
-//        sb.append(SPLITTERPOSLONLAT);
-//        sb.append("accuracy:" + location.getAccuracy());
-//        sb.append(SPLITTERPOSLONLAT);
-//        sb.append("speed:" + location.getSpeed());
-//        sb.append(SPLITTERPOSLONLAT);
-//        sb.append("battery:" + location.getBattery());
-//        sb.append(SPLITTERPOS + "}");
-//        sb.append("\r\n");
-        return str;
+        return "1#" + JSON.toJSONString(location);
     }
 
 }

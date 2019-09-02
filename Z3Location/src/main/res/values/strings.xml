@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Z3Location</string>
+
+    <string name="str_same_time_positions">时间相同，坐标点相同</string>
+    <string name="str_same_positions">坐标点相同</string>
+    <string name="str_invalid_user_id">用户id无效，请登录位置服务</string>
+    <string name="str_position_from">定位来源:</string>
+    <string name="str_position_gaode_error_code">高德定位失败错误码:</string>
 </resources>

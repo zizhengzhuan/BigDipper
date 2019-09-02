@@ -1,7 +1,6 @@
 package com.z3pipe.bigdipper.model;
 
-import com.z3pipe.bigdipper.R;
-import com.z3pipe.bigdipper.util.StringUtil;
+import com.z3pipe.z3location.util.StringUtil;
 
 import java.io.Serializable;
 

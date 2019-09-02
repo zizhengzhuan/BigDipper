@@ -30,6 +30,11 @@
   <string name="settings_foreground_summary">提高服务优先级</string>
   <string name="settings_report_off_summary">坐标上报已停止</string>
   <string name="settings_report_on_summary">坐标上报进行中</string>
+  <string name="share_off_summary">结束文件分享</string>
+  <string name="share_on_summary">分享文件中</string>
+  <string name="share_status_off">开始</string>
+  <string name="share_status_on">结束</string>
+  <string name="share_title">分享文件</string>
   <string name="menu_status">定位状态</string>
   <string name="menu_about">关于</string>
   <string name="menu_shortcuts">添加图标</string>
@@ -55,6 +60,7 @@
   <string name="login_pwd_input">请输入您的密码</string>
   <string name="str_remember_password">记住密码</string>
   <string name="str_auto_login">自动登录</string>
+  <string name="str_setting_ip">设置IP</string>
   <string name="str_forgetpassword">找回密码</string>
   <string name="str_clickinput">点击输入</string>
   <string name="str_setting">设置</string>

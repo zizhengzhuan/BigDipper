@@ -10,15 +10,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
-import android.graphics.Point;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.EditTextPreference;
-import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.TwoStatePreference;
@@ -32,25 +28,18 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.z3pipe.bigdipper.R;
 import com.z3pipe.bigdipper.activity.MainActivity;
-import com.z3pipe.bigdipper.activity.TxtActivity;
 import com.z3pipe.bigdipper.ui.dialog.LoginDialog;
-import com.z3pipe.bigdipper.util.StringUtil;
+import com.z3pipe.z3location.util.SettingsManager;
+import com.z3pipe.bigdipper.util.ShareHelper;
+import com.z3pipe.z3location.util.StringUtil;
+import com.z3pipe.bigdipper.util.ZipUtil;
 import com.z3pipe.z3core.util.DateUtil;
 import com.z3pipe.z3location.broadcast.AutostartReceiver;
-import com.z3pipe.z3location.model.Position;
 import com.z3pipe.z3location.service.PositionService;
 
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -59,30 +48,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
-import android.Manifest;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.preference.TwoStatePreference;
-import android.webkit.URLUtil;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-
-import com.z3pipe.bigdipper.R;
-import com.z3pipe.bigdipper.activity.MainActivity;
-import com.z3pipe.z3location.broadcast.AutostartReceiver;
-import com.z3pipe.z3location.service.PositionService;
 import com.z3pipe.z3location.service.WatchDogService;
 import com.z3pipe.z3location.util.Constants;
 import com.z3pipe.z3location.util.FileUtil;
@@ -95,8 +60,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
-import static java.net.Proxy.Type.HTTP;
 
 /**
  * @link https://www.z3pipe.com
@@ -120,6 +83,8 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
     public static final String KEY_ACCURACY = "accuracy";
     public static final String KEY_STATUS = "status";
     public static final String KEY_REPORT = "report";
+    public static final String KEY_SHARE = "share";
+
 
     private static final int PERMISSIONS_REQUEST_LOCATION = 2;
 
@@ -219,6 +184,8 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
     @Override
     public void onResume() {
         super.onResume();
+        TwoStatePreference preference = (TwoStatePreference) findPreference(KEY_SHARE);
+        preference.setChecked(false);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
@@ -282,6 +249,22 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
         } else if(key.equals(KEY_REPORT)) {
             if (sharedPreferences.getBoolean(KEY_REPORT, false)) {
                 reportPosition();
+            }
+        } else if(key.equals(KEY_SHARE)) {
+            if (sharedPreferences.getBoolean(KEY_SHARE, false)) {
+                String srcPath = FileUtil.getInstance(null).getConfPath();
+                String tagetPath = FileUtil.getInstance(null).getRootPath() + "/position.zip";
+                try {
+                    ZipUtil.zip(srcPath, tagetPath);
+                    File file = new File(tagetPath);
+                    if(file.exists()) {
+                        ShareHelper.shareFile(getActivity(), file);
+                    } else {
+                        Toast.makeText(getActivity(), "未获取到日志文件",Toast.LENGTH_SHORT).show();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -374,12 +357,16 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
                 if (isTimetaskStop) {
                     return;
                 }
-                if(!StringUtil.isBlank(Constants.USERID)) {
-                    return;
+                String userId = SettingsManager.getInstance().getUserId(getActivity());
+                if(StringUtil.isBlank(Constants.USERID) && !"0".equals(userId)) {
+                    if(StringUtil.isBlank(Constants.USERID)) {
+                        Constants.USERID = userId;
+                    }
                 }
-                Message msg = Message.obtain();
-                msg.obj = SHOW_LOGIN_DIALOG;
-                handler.sendMessage(msg);
+
+//                Message msg = Message.obtain();
+//                msg.obj = SHOW_LOGIN_DIALOG;
+//                handler.sendMessage(msg);
             } catch (Throwable t) {
                 Log.e("LocationService", t.getMessage());
             }
@@ -387,9 +374,7 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
     }
 
     private void reportPosition(){
-//        new Thread(new PostRunnable()).start();
         String requestUrl = "http://www.z3pipe.com:2436/api/v1/z3iot/position/reportTrace";
-       // String requestUrl = "http://192.168.60.199:2436/api/v1/z3iot/position/reportTrace";
         MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
         final String requestBody = getPositionArr();
         Request request = new Request.Builder()
@@ -426,7 +411,6 @@ public class MainFragment extends PreferenceFragment implements OnSharedPreferen
             switch (msg.what) {
                 case REPORT_SUCCESS:
                     showNotice(true);
-                    sharedPreferences.edit().putBoolean(KEY_REPORT, false).apply();
                     TwoStatePreference preference = (TwoStatePreference) findPreference(KEY_REPORT);
                     preference.setChecked(false);
                     break;

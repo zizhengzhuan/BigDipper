@@ -194,4 +194,9 @@ public class Position extends BaseModel {
     public void setCourse(double course) {
         this.course = course;
     }
+
+    @Override
+    public String toString() {
+        return "Position{" + "id=" + id + ", x=" + x + ", y=" + y + ", lon=" + lon + ", lat=" + lat + ", accuracy=" + accuracy + ", time=" + time + ", gpsTime='" + gpsTime + '\'' + ", state=" + state + ", userId='" + userId + '\'' + ", speed=" + speed + ", course=" + course + ", battery='" + battery + '\'' + ", deviceId='" + deviceId + '\'' + ", userName='" + userName + '\'' + ", trueName='" + trueName + '\'' + '}';
+    }
 }

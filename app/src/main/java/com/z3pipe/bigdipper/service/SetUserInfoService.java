@@ -74,7 +74,7 @@ public class SetUserInfoService extends Service {
 
         @Override
         public void setUserInfos(String userName, String userId, String userToken, String deviceId) throws RemoteException {
-            Log.d(TAG, "由智慧运营APP获取到的用户信息：用户名称: " + userName + " 用户ID: " + userId + " 用户token: " + userToken + " 用户deviceid: " + deviceId);
+//            Log.d(TAG, "由智慧运营APP获取到的用户信息：用户名称: " + userName + " 用户ID: " + userId + " 用户token: " + userToken + " 用户deviceid: " + deviceId);
 //            Constants.USERID = userId;
 //            Constants.DEVICEID = deviceId;
 //            Constants.USER_NAME = userName;

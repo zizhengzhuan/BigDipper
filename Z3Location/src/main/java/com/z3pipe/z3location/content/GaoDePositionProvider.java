@@ -2,14 +2,21 @@ package com.z3pipe.z3location.content;
 
 import android.content.Context;
 import android.location.Location;
+import android.util.Log;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.ecity.android.log.LogUtil;
+import com.z3pipe.z3core.config.DateStyle;
+import com.z3pipe.z3core.util.DateUtil;
 import com.z3pipe.z3core.util.WebCoordinateConverter;
+import com.z3pipe.z3location.R;
 import com.z3pipe.z3location.config.PositionCollectionConfig;
 import com.z3pipe.z3location.model.ELocationQuality;
+
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -62,7 +69,8 @@ public class GaoDePositionProvider extends PositionProvider implements AMapLocat
         }
 
         if (aMapLocation.getErrorCode() != 0) {
-            String errorCode = "高德定位失败错误码：" + aMapLocation.getErrorCode();
+            String errorCode = context.getResources().getString(R.string.str_position_gaode_error_code) + aMapLocation.getErrorCode();
+            LogUtil.e("GaoDePositionProvider", errorCode);
             onLocationError(errorCode);
             return;
         }
@@ -75,6 +83,8 @@ public class GaoDePositionProvider extends PositionProvider implements AMapLocat
         gpsLocation.setAltitude(aMapLocation.getAltitude());
         gpsLocation.setLatitude(point[1]);
         gpsLocation.setLongitude(point[0]);
+//        gpsLocation.setLatitude(aMapLocation.getLatitude());
+//        gpsLocation.setLongitude(aMapLocation.getLongitude());
         //获取当前速度 单位：米/秒 仅在AMapLocation.getProvider()是gps时有效
         gpsLocation.setSpeed(aMapLocation.getSpeed());
         processLocation(gpsLocation);
@@ -94,7 +104,7 @@ public class GaoDePositionProvider extends PositionProvider implements AMapLocat
         option.setNeedAddress(false);
         //设置是否只定位一次,默认为false
         option.setOnceLocation(onceLocation);
-//        //是否使用设备传感器
+        //是否使用设备传感器
         option.setSensorEnable(true);
         //设置是否强制刷新WIFI，默认为强制刷新
         option.setWifiActiveScan(true);
