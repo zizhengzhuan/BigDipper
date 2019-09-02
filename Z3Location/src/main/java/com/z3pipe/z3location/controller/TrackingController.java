@@ -10,6 +10,7 @@ import android.util.Log;
 import com.z3pipe.z3location.base.PositionProviderFactory;
 import com.z3pipe.z3location.broadcast.NetworkBroadcastReceiver;
 import com.z3pipe.z3location.config.PositionCollectionConfig;
+import com.z3pipe.z3location.content.GpsPositionProvider;
 import com.z3pipe.z3location.content.PositionProvider;
 import com.z3pipe.z3location.db.DatabaseHelper;
 import com.z3pipe.z3location.model.ELocationQuality;
@@ -34,6 +35,7 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
     private Context context;
     private Handler handler;
     private PositionProvider positionProvider;
+    private PositionProvider gpsPositionProvider;
     private DatabaseHelper databaseHelper;
     private NetworkBroadcastReceiver networkManager;
     private final PositionCollectionConfig positionCollectionConfig;
@@ -57,6 +59,9 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
         handler = new Handler();
         this.positionCollectionConfig = positionCollectionConfig;
         positionProvider = PositionProviderFactory.creatPositionProvider(context, positionCollectionConfig,this);
+//        gpsPositionProvider = PositionProviderFactory.creatGpsPositionProvider(context, positionCollectionConfig,this);
+
+
         databaseHelper = new DatabaseHelper(context);
         networkManager = new NetworkBroadcastReceiver(context, this);
         isOnline = networkManager.isOnline();
@@ -84,6 +89,7 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             try {
                 positionProvider.startUpdates();
+//                gpsPositionProvider.startUpdates();
             } catch (SecurityException e) {
                 Log.w(TAG, e);
             }
@@ -97,12 +103,13 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
         uploadTread.cancelExecute(true);
         PositionDataSendTask.getInstance(positionCollectionConfig).clearSendSocketData();
         networkManager.stop();
+
         try {
             positionProvider.stopUpdates();
+//            gpsPositionProvider.stopUpdates();
         } catch (SecurityException e) {
             Log.w(TAG, e);
         }
-
         handler.removeCallbacksAndMessages(null);
     }
 
@@ -236,7 +243,7 @@ public class TrackingController implements PositionProvider.PositionListener, Ne
         //List<Position> positions = new ArrayList<>();
         //positions.add(position);
         //PositionDataSendTask.getInstance(positionCollectionConfig).sendOrder(JSONArray.toJSONString(positions));
-        PositionDataSendTask.getInstance(positionCollectionConfig).sendOrder(position,databaseHelper);
+        PositionDataSendTask.getInstance(positionCollectionConfig).sendOrder(position, databaseHelper);
         unlock();
     }
 

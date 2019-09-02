@@ -7,6 +7,9 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+
+import com.ecity.android.log.LogUtil;
+
 /**
  * @link https://www.z3pipe.com
  * @author zhengzhuanzi
@@ -54,6 +57,7 @@ public class NetworkBroadcastReceiver extends BroadcastReceiver {
         if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION) && handler != null) {
             boolean isOnline = isOnline();
             Log.i(TAG, "network " + (isOnline ? "on" : "off"));
+            LogUtil.d(TAG, "network " + (isOnline ? "on" : "off"));
             handler.onNetworkUpdate(isOnline);
         }
     }

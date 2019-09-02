@@ -5,6 +5,7 @@ import android.os.Trace;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSONArray;
+import com.ecity.android.log.LogUtil;
 import com.koushikdutta.async.AsyncNetworkSocket;
 import com.koushikdutta.async.AsyncServer;
 import com.koushikdutta.async.AsyncSocket;
@@ -88,14 +89,14 @@ public class PositionDataSendTask implements ConnectCallback {
     public void onConnectCompleted(Exception ex, AsyncSocket socket) {
         connecting = false;
         if (ex != null) {
-            Log.d("Socket", "连接出错");
+            LogUtil.d("Socket", "连接出错");
             return;
         }
         socket.setDataCallback(new DataCallback() {
             @Override
             public void onDataAvailable(DataEmitter emitter, ByteBufferList bb) {
                 lastHeartbeatResponseTime = SystemClock.elapsedRealtime();
-                Log.d("Socket", "接收到：" + new String(bb.getAllByteArray()));
+                LogUtil.d("Socket", "接收到：" + new String(bb.getAllByteArray()));
             }
         });
         socket.setClosedCallback(new CompletedCallback() {
@@ -103,10 +104,10 @@ public class PositionDataSendTask implements ConnectCallback {
             public void onCompleted(Exception ex) {
                 markConnectLost();
                 if (ex != null) {
-                    Log.d("Socket", "setClosedCallback出错");
+                    LogUtil.d("Socket", "setClosedCallback出错");
                     return;
                 }
-                Log.d("Socket", "setClosedCallback");
+                LogUtil.d("Socket", "setClosedCallback");
             }
         });
         socket.setEndCallback(new CompletedCallback() {
@@ -114,23 +115,23 @@ public class PositionDataSendTask implements ConnectCallback {
             public void onCompleted(Exception ex) {
                 markConnectLost();
                 if (ex != null) {
-                    Log.d("Socket", "setEndCallback出错");
+                    LogUtil.d("Socket", "setEndCallback出错");
                     return;
                 }
-                Log.d("Socket", "setEndCallback");
+                LogUtil.d("Socket", "setEndCallback");
             }
         });
         socket.setWriteableCallback(new WritableCallback() {
             @Override
             public void onWriteable() {
                 lastHeartbeatResponseTime = SystemClock.elapsedRealtime();
-                Log.d("Socket", "onWriteable");
+                LogUtil.d("Socket", "onWriteable");
             }
         });
 
         this.socket = socket;
         lastHeartbeatResponseTime = SystemClock.elapsedRealtime();
-        Log.d("Socket", "socket链接成功");
+        LogUtil.d("Socket", "socket链接成功");
     }
 
     /**
@@ -149,11 +150,11 @@ public class PositionDataSendTask implements ConnectCallback {
                         return;
                     }
                     lastHeartbeatResponseTime = SystemClock.elapsedRealtime();
-                    Log.d("Socket", "发送了：" + order);
+                    LogUtil.d("Socket", "发送了：" + order);
                 }
             });
         } else {
-            Log.d("Socket", "socket==null");
+            LogUtil.d("Socket", "socket==null");
         }
     }
 
@@ -202,7 +203,7 @@ public class PositionDataSendTask implements ConnectCallback {
                         return;
                     }
                     lastHeartbeatResponseTime = SystemClock.elapsedRealtime();
-                    Log.d("Socket", "发送了：" + order);
+                    LogUtil.d("Socket", "发送了：" + order);
 //                    position.setState(1);
 //                    // 发送成功更新数据
 //                    if (position.getId()>0){
@@ -227,7 +228,7 @@ public class PositionDataSendTask implements ConnectCallback {
                     }
                 });
             }
-            Log.d("Socket", "socket==null");
+            LogUtil.d("Socket", "socket==null");
         }
     }
 
@@ -282,7 +283,7 @@ public class PositionDataSendTask implements ConnectCallback {
         checkConnect();
 
         if (socket == null) {
-            Log.d("Socket", "socket==null");
+            LogUtil.d("Socket", "socket==null");
             return;
         }
         Util.writeAll(socket, "{\"header\":{\"cmd\":\"1002\"},\"body\":{\"result\":\"\"}}".getBytes(), new CompletedCallback() {
@@ -290,11 +291,11 @@ public class PositionDataSendTask implements ConnectCallback {
             public void onCompleted(Exception ex) {
                 TrackingController.isNeedReconnect = false;
                 if (ex != null) {
-                    Log.d("SendSocket", "writeAll出错");
+                    LogUtil.d("SendSocket", "writeAll出错");
                     return;
                 }
                 lastHeartbeatResponseTime = SystemClock.elapsedRealtime();
-                Log.d("SendSocket", "发送了：{\"header\":{\"cmd\":\"1002\"},\"body\":{\"result\":\"\"}}");
+                LogUtil.d("SendSocket", "发送了：{\"header\":{\"cmd\":\"1002\"},\"body\":{\"result\":\"\"}}");
             }
         });
     }
@@ -304,7 +305,7 @@ public class PositionDataSendTask implements ConnectCallback {
             try {
                 socket.close();
             } catch (Exception e) {
-                Log.d("SendSocket", "socket close Exception" + e.getMessage());
+                LogUtil.d("SendSocket", "socket close Exception" + e.getMessage());
             }
         }
         keepRunning = false;
@@ -336,7 +337,7 @@ public class PositionDataSendTask implements ConnectCallback {
         if (null == socket || !socket.isOpen() || timeOffset > HEARTBEAT_TIMEOUT) {
             connecting = true;
             retryCount++;
-            Log.d("SendSocket", "重新连接次数：" + retryCount);
+            LogUtil.d("SendSocket", "重新连接次数：" + retryCount);
             AsyncServer.getDefault().connectSocket(positionCollectionConfig.getHost(), positionCollectionConfig.getPort(), this);
         }
     }

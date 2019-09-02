@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -15,16 +14,14 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.z3pipe.bigdipper.R;
-import com.z3pipe.bigdipper.activity.LoginActivity;
-import com.z3pipe.bigdipper.util.SettingsManager;
-import com.z3pipe.bigdipper.util.StringUtil;
+import com.z3pipe.bigdipper.util.ResponseUtil;
+import com.z3pipe.z3location.util.SettingsManager;
+import com.z3pipe.z3location.util.StringUtil;
 import com.z3pipe.z3location.util.Constants;
 
 import org.json.JSONObject;
@@ -40,6 +37,7 @@ public class LoginDialog extends Dialog{
     private static final int LOGIN_SUCCESS = 1;
     private static final int LOGIN_FAILED = 2;
 
+    private Context context;
     private EditText etUsername;
     private EditText etPassword;
     private ImageView imgClearInput;
@@ -47,14 +45,14 @@ public class LoginDialog extends Dialog{
     private String password;
     private Button btnLogin;
 
-    private CheckBox cbAutoLogin;
     private CheckBox cbRememberPassword;
-    private boolean doesAutoLogin;
+    private TextView tvIPSetting;
     private boolean doesRememberPassword;
     private LoginHandler loginHandler;
 
     public LoginDialog(Context context) {
         this(context, 0);
+        this.context = context;
     }
 
     public LoginDialog(Context context, int theme) {
@@ -73,10 +71,7 @@ public class LoginDialog extends Dialog{
         cbRememberPassword = (CheckBox) findViewById(R.id.cb_remember_password);
         cbRememberPassword.setOnCheckedChangeListener(rememberPasswordCheckedChangListener);
         cbRememberPassword.setChecked(SettingsManager.getInstance().getRememberPassword(getContext()));
-        cbAutoLogin = (CheckBox) findViewById(R.id.cb_auto_login);
-        cbAutoLogin.setOnCheckedChangeListener(autoLoginCheckedChangListener);
-        cbAutoLogin.setChecked(SettingsManager.getInstance().getAutoLogin(getContext()));
-        cbAutoLogin.setVisibility(View.GONE);
+        tvIPSetting = (TextView) findViewById(R.id.tv_setting);
 
         UserInfoTextWatcher textWatcher = new UserInfoTextWatcher();
         etUsername.addTextChangedListener(textWatcher);
@@ -98,35 +93,54 @@ public class LoginDialog extends Dialog{
             }
         });
 
+        tvIPSetting.setVisibility(View.GONE);
+        tvIPSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setIp();
+            }
+        });
+
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onLoginBtnClicked();
             }
         });
+
+
+    }
+
+    private void setIp() {
+        InputDialog dialog = new InputDialog(context, new InputDialog.IOkBtnCallback() {
+            @Override
+            public void onOk(String remark) {
+                SettingsManager.getInstance().setHbpBaseServer(context, remark);
+                if(remark.contains("ibpsApi")) {
+                    SettingsManager.getInstance().setHBPLogin(context, true);
+                } else {
+                    SettingsManager.getInstance().setHBPLogin(context, false);
+                }
+            }
+        });
+        dialog.setTitle("当前登录url");
+        String baseUrl = SettingsManager.getInstance().getHbpBaseServer(context);
+        if(StringUtil.isBlank(baseUrl)) {
+            dialog.setEtv("http://svr02.sz-hkcw.com:8090/ServiceEngine/rest/userService/login");
+        } else {
+            dialog.setEtv(baseUrl);
+        }
+        dialog.show();
     }
 
     private CompoundButton.OnCheckedChangeListener rememberPasswordCheckedChangListener = new CompoundButton.OnCheckedChangeListener() {
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (!isChecked) {
-                cbAutoLogin.setChecked(false);
-            }
             doesRememberPassword = isChecked;
         }
     };
 
-    private CompoundButton.OnCheckedChangeListener autoLoginCheckedChangListener = new CompoundButton.OnCheckedChangeListener() {
-
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (isChecked) {
-                cbRememberPassword.setChecked(true);
-            }
-            doesAutoLogin = isChecked;
-        }
-    };
 
     private void startLogin(String username, String password) {
         showToast(getContext().getResources().getString(R.string.login_logging_in));
@@ -138,12 +152,20 @@ public class LoginDialog extends Dialog{
         public void run() {
             try {
                 String url = SettingsManager.getInstance().getHbpBaseServer(getContext());
+                boolean hbpLogin = SettingsManager.getInstance().getHBPLogin(getContext());
                 if(StringUtil.isBlank(url)) {
+//                    url = "http://svr02.sz-hkcw.com:8090/ServiceEngine/rest/userService/login";
                     url = "http://svr02.sz-hkcw.com:8090/ServiceEngine/rest/userService/login";
                 }
-                url = url + "?sys=android&_type=json&username="+ username + "&password=" + password;
+                if(hbpLogin) {
+                    url = url + "?account="+ username + "&pwd=" + password;
+                } else {
+                    url = url + "?sys=android&_type=json&username="+ username + "&password=" + password;
+                }
                 HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(url).openConnection();
-                httpURLConnection.setConnectTimeout(10 * 1000);
+                httpURLConnection.setConnectTimeout(30 * 1000);
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setRequestProperty("Accept", "application/json");
                 Message message = Message.obtain();
                 if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     InputStream is = httpURLConnection.getInputStream();
@@ -157,13 +179,12 @@ public class LoginDialog extends Dialog{
                     //获取响应文本
                     String responseText = sb.toString();
                     JSONObject jsonObject = new JSONObject(responseText);
-                    boolean success = jsonObject.optBoolean("isSuccess");
-                    if (success) {
+                    if(ResponseUtil.success(jsonObject)) {
                         message.what = LOGIN_SUCCESS;
                         message.obj = jsonObject;
                     } else {
                         message.what = LOGIN_FAILED;
-                        message.obj = httpURLConnection.getResponseMessage();
+                        message.obj = ResponseUtil.getErrorMsg(jsonObject);
                     }
                 } else {
                     message.what = LOGIN_FAILED;
@@ -262,13 +283,21 @@ public class LoginDialog extends Dialog{
                 case LOGIN_SUCCESS:
                     showToast(getContext().getResources().getString(R.string.login_success));
                     SettingsManager.getInstance().setLastUser(getContext(), username, password, doesRememberPassword);
-                    SettingsManager.getInstance().setAutoLogin(getContext(), doesAutoLogin);
                     JSONObject jsonObject = (JSONObject) msg.obj;
-                    setUserInfo(jsonObject);
+                    boolean hbpLogin = SettingsManager.getInstance().getHBPLogin(getContext());
+                    if(hbpLogin) {
+                        setHbpUserInfo(jsonObject);
+                    } else {
+                        setUserInfo(jsonObject);
+                    }
                     dismiss();
                     break;
                 case LOGIN_FAILED:
-                    showToast(getContext().getResources().getString(R.string.login_fail_try_later));
+                    String error = (String) msg.obj;
+                    if(StringUtil.isEmpty(error)) {
+                        error = getContext().getResources().getString(R.string.login_fail_try_later);
+                    }
+                    showToast(error);
                     break;
                 default:
                     break;
@@ -276,8 +305,26 @@ public class LoginDialog extends Dialog{
         }
     }
 
+    private void setHbpUserInfo(JSONObject jsonObject) {
+        JSONObject userJson = jsonObject.optJSONObject("data");
+        if(null == userJson) {
+            return;
+        }
+        String userId = userJson.optString("id");
+        String userName = userJson.optString("account");
+        String trueName = userJson.optString("fullName");
+
+        Constants.USERID = String.valueOf(userId);
+        Constants.USER_NAME = userName;
+        Constants.TRUE_NAME = trueName;
+        SettingsManager.getInstance().setUserId(getContext(), Constants.USERID);
+    }
+
     private void setUserInfo(JSONObject jsonObject) {
         JSONObject userJson = jsonObject.optJSONObject("user");
+        if(null == userJson) {
+            return;
+        }
         int userId = userJson.optInt("id");
         String userName = userJson.optString("username");
         String trueName = userJson.optString("trueName");
@@ -287,6 +334,7 @@ public class LoginDialog extends Dialog{
         Constants.USERID = String.valueOf(userId);
         Constants.USER_NAME = userName;
         Constants.TRUE_NAME = trueName;
+        SettingsManager.getInstance().setUserId(getContext(), Constants.USERID);
     }
 
 }

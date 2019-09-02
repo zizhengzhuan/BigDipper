@@ -1,8 +1,7 @@
-package com.z3pipe.bigdipper.util;
+package com.z3pipe.z3location.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

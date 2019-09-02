@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.z3pipe.z3location.config.PositionCollectionConfig;
 import com.z3pipe.z3location.content.GaoDePositionProvider;
+import com.z3pipe.z3location.content.GpsPositionProvider;
 import com.z3pipe.z3location.content.PositionProvider;
 
 /**
@@ -17,8 +18,14 @@ import com.z3pipe.z3location.content.PositionProvider;
  * @author zhengzhuanzi
  */
 public class PositionProviderFactory {
+
     public static PositionProvider creatPositionProvider(Context context, PositionCollectionConfig positionCollectionConfig, PositionProvider.PositionListener listener) {
         //TODO：支持不同类型的定位
         return new GaoDePositionProvider(context,positionCollectionConfig,listener);
+    }
+
+    public static PositionProvider creatGpsPositionProvider(Context context, PositionCollectionConfig positionCollectionConfig, PositionProvider.PositionListener listener) {
+        //TODO：支持不同类型的定位
+        return new GpsPositionProvider(context,positionCollectionConfig,listener);
     }
 }

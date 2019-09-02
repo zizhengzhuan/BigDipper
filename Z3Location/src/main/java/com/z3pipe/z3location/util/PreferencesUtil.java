@@ -1,8 +1,10 @@
-package com.z3pipe.bigdipper.util;
+package com.z3pipe.z3location.util;
 
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
 import android.os.Build.VERSION;
+
+import com.z3pipe.z3location.util.StringUtil;
 
 public class PreferencesUtil {
     public static String PREFERENCE_NAME = "bigdipper";

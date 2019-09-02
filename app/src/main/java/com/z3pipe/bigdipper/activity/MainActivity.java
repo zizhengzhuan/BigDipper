@@ -1,12 +1,10 @@
 package com.z3pipe.bigdipper.activity;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,14 +16,10 @@ import com.xdandroid.hellodaemon.DaemonEnv;
 import com.z3pipe.bigdipper.content.DeviceIdentityProvider;
 import com.z3pipe.bigdipper.fragment.MainFragment;
 import com.z3pipe.bigdipper.model.Constance;
-import com.z3pipe.bigdipper.model.Constant;
 import com.z3pipe.bigdipper.util.PermissionManager;
-import com.z3pipe.bigdipper.util.StringUtil;
 import com.z3pipe.z3location.config.PositionCollectionConfig;
 import com.z3pipe.z3location.controller.TrackingConfigController;
 import com.z3pipe.z3location.service.PositionService;
-import com.z3pipe.z3location.service.WatchDogService;
-import com.z3pipe.z3location.util.Constants;
 
 import java.util.List;
 

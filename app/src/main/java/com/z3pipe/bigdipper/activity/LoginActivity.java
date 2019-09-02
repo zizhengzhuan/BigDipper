@@ -24,27 +24,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.enn.sop.IUserInfoAidlInterface;
-import com.xdandroid.hellodaemon.DaemonEnv;
 import com.z3pipe.bigdipper.R;
 import com.z3pipe.bigdipper.content.DeviceIdentityProvider;
 import com.z3pipe.bigdipper.model.Constance;
 import com.z3pipe.bigdipper.ui.dialog.InputDialog;
 import com.z3pipe.bigdipper.util.PermissionManager;
-import com.z3pipe.bigdipper.util.SettingsManager;
-import com.z3pipe.bigdipper.util.StringUtil;
+import com.z3pipe.z3location.util.SettingsManager;
+import com.z3pipe.z3location.util.StringUtil;
 import com.z3pipe.z3location.config.PositionCollectionConfig;
 import com.z3pipe.z3location.controller.TrackingConfigController;
-import com.z3pipe.z3location.service.PositionService;
 import com.z3pipe.z3location.service.WatchDogService;
 import com.z3pipe.z3location.util.Constants;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -52,10 +46,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
-
-import pub.devrel.easypermissions.AppSettingsDialog;
-import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * @author zhengzhuanzi
